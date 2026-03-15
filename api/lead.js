@@ -1,11 +1,10 @@
 const postgres = require("postgres");
 
-const sql = postgres(process.env.SUPABASE_POSTGRES_URL, {
-  ssl: "require",
-  max: 1,
-  idle_timeout: 10,
-  connect_timeout: 10,
-});
+function json(res, code, obj) {
+  res.statusCode = code;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(obj));
+}
 
 function isValidEmail(email) {
   return typeof email === "string" && email.includes("@") && email.length <= 254;
@@ -23,7 +22,28 @@ function isSafeUrl(u) {
 }
 
 module.exports = async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).send("Method not allowed");
+  // Always handle GET cleanly (so visiting /api/lead doesn't crash)
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return json(res, 405, { ok: false, error: "Method not allowed" });
+  }
+
+  // Check env var BEFORE creating a client
+  const conn = process.env.SUPABASE_POSTGRES_URL;
+  if (!conn) return json(res, 500, { ok: false, error: "Missing SUPABASE_POSTGRES_URL" });
+
+  let sql;
+  try {
+    sql = postgres(conn, {
+      ssl: "require",
+      max: 1,
+      idle_timeout: 10,
+      connect_timeout: 10,
+    });
+  } catch (e) {
+    console.error("Postgres client init failed:", e);
+    return json(res, 500, { ok: false, error: "DB client init failed" });
+  }
 
   try {
     const { name, email, auditUrl } = req.body || {};
@@ -32,10 +52,10 @@ module.exports = async function handler(req, res) {
     const cleanEmail = (email || "").trim().toLowerCase();
     const cleanAuditUrl = (auditUrl || "").trim();
 
-    if (!cleanName) return res.status(400).json({ ok: false, error: "Name is required" });
-    if (!isValidEmail(cleanEmail)) return res.status(400).json({ ok: false, error: "Valid email is required" });
+    if (!cleanName) return json(res, 400, { ok: false, error: "Name is required" });
+    if (!isValidEmail(cleanEmail)) return json(res, 400, { ok: false, error: "Valid email is required" });
     if (cleanAuditUrl && !isSafeUrl(cleanAuditUrl)) {
-      return res.status(400).json({ ok: false, error: "Invalid auditUrl" });
+      return json(res, 400, { ok: false, error: "Invalid auditUrl" });
     }
 
     await sql`
@@ -43,9 +63,9 @@ module.exports = async function handler(req, res) {
       values (${cleanName}, ${cleanEmail}, ${cleanAuditUrl || null})
     `;
 
-    return res.status(200).json({ ok: true });
+    return json(res, 200, { ok: true });
   } catch (err) {
     console.error("Lead insert failed:", err);
-    return res.status(500).json({ ok: false, error: "Server error" });
+    return json(res, 500, { ok: false, error: "Server error" });
   }
 };
