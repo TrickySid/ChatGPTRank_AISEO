@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { FUNC_BASE } from '../../constants.js';
 
 export default function GateSection({ onUnlock, reportData, auditUrl, onShowPrivacy }) {
   const [name, setName]   = useState('');
@@ -17,12 +16,26 @@ export default function GateSection({ onUnlock, reportData, auditUrl, onShowPriv
     setBtnText('Unlocking…');
 
     try {
-      fetch(FUNC_BASE + '/.netlify/functions/send-otp', {
+      const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: name.trim(), email: email.trim(), auditUrl })
-      }).catch(() => {});
-    } catch(e) {}
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        shakeErr(data?.error || `Could not save details (${res.status})`);
+        setBtnDisabled(false);
+        setBtnText('Send Verification Code →');
+        return;
+      }
+    } catch (e) {
+      shakeErr('Could not save your details. Please try again.');
+      setBtnDisabled(false);
+      setBtnText('Send Verification Code →');
+      return;
+    }
 
     try {
       localStorage.setItem('cr_lead', JSON.stringify({ name: name.trim(), email: email.trim(), ts: Date.now() }));
