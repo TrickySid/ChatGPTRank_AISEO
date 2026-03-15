@@ -1,4 +1,4 @@
-const postgres = require("postgres");
+import postgres from "postgres";
 
 function json(res, code, obj) {
   res.statusCode = code;
@@ -21,29 +21,23 @@ function isSafeUrl(u) {
   }
 }
 
-module.exports = async function handler(req, res) {
-  // Always handle GET cleanly (so visiting /api/lead doesn't crash)
+export default async function handler(req, res) {
+  // Always handle non-POST cleanly
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return json(res, 405, { ok: false, error: "Method not allowed" });
   }
 
-  // Check env var BEFORE creating a client
   const conn = process.env.SUPABASE_POSTGRES_URL;
   if (!conn) return json(res, 500, { ok: false, error: "Missing SUPABASE_POSTGRES_URL" });
 
-  let sql;
-  try {
-    sql = postgres(conn, {
-      ssl: "require",
-      max: 1,
-      idle_timeout: 10,
-      connect_timeout: 10,
-    });
-  } catch (e) {
-    console.error("Postgres client init failed:", e);
-    return json(res, 500, { ok: false, error: "DB client init failed" });
-  }
+  // init only on POST
+  const sql = postgres(conn, {
+    ssl: "require",
+    max: 1,
+    idle_timeout: 10,
+    connect_timeout: 10,
+  });
 
   try {
     const { name, email, auditUrl } = req.body || {};
@@ -68,4 +62,4 @@ module.exports = async function handler(req, res) {
     console.error("Lead insert failed:", err);
     return json(res, 500, { ok: false, error: "Server error" });
   }
-};
+}
