@@ -53,9 +53,13 @@ export default async function handler(req, res) {
     }
 
     await sql`
-      insert into public.leads (name, email, audit_url)
-      values (${cleanName}, ${cleanEmail}, ${cleanAuditUrl || null})
-    `;
+        insert into public.leads (name, email, audit_url)
+        values (${cleanName}, ${cleanEmail}, ${cleanAuditUrl || null})
+        on conflict (email) do update set
+            name = excluded.name,
+            audit_url = excluded.audit_url,
+            created_at = now()
+        `;
 
     return json(res, 200, { ok: true });
   } catch (err) {
