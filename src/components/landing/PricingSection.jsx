@@ -101,7 +101,7 @@ export default function PricingSection({ onScrollToTop }) {
               <li><span className="tick">✓</span> Personal AI SEO consultant</li>
               <li><span className="tick">✓</span> Monthly strategy calls</li>
             </ul>
-            <button className="pricing-btn purple-btn" onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSeGcvYYWkXVQQRLZnR5S42Qv-tB_zKdkU7_8E-hcvEi4SxfmA/viewform','_blank')}>Get Custom Help →</button>
+            <button className="pricing-btn purple-btn" onClick={() => window.open('https://forms.gle/H1AjodzzgSG6YjSV7','_blank')}>Get Custom Help →</button>
           </div>
 
         </div>

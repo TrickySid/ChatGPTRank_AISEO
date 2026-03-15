@@ -16,7 +16,7 @@ export default function PrivacyModal({ show, onClose }) {
         <h4>Cookies</h4>
         <p>We use sessionStorage (not cookies) to temporarily cache your audit report for convenience. No tracking cookies are used.</p>
         <h4>Contact</h4>
-        <p>For privacy requests, use our <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGcvYYWkXVQQRLZnR5S42Qv-tB_zKdkU7_8E-hcvEi4SxfmA/viewform" target="_blank" rel="noopener" style={{color:'var(--orange)'}}>contact form</a>.</p>
+        <p>For privacy requests, use our <a href="https://forms.gle/H1AjodzzgSG6YjSV7" target="_blank" rel="noopener" style={{color:'var(--orange)'}}>contact form</a>.</p>
         <button className="privacy-close" onClick={onClose}>Close</button>
       </div>
     </div>
