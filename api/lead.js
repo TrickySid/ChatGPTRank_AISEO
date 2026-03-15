@@ -55,7 +55,7 @@ export default async function handler(req, res) {
     await sql`
         insert into public.leads (name, email, audit_url)
         values (${cleanName}, ${cleanEmail}, ${cleanAuditUrl || null})
-        on conflict (email) do update set
+        on conflict on constraint leads_email_key do update set
             name = excluded.name,
             audit_url = excluded.audit_url,
             created_at = now()
