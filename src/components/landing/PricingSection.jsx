@@ -34,7 +34,8 @@ export default function PricingSection({ onScrollToTop }) {
             <div className="pricing-price">$0</div>
             <div className="pricing-per">forever</div>
             <ul className="pricing-features">
-              <li><span className="tick">✓</span> 1 audit per day per device</li>
+              <li><span className="tick">✓</span> Unlimited audits — no daily limit</li>
+              <li><span className="tick">✓</span> 3 report generations per device</li>
               <li><span className="tick">✓</span> Overall SEO score (out of 10)</li>
               <li><span className="tick">✓</span> 7-category score breakdown</li>
               <li><span className="tick">✓</span> Full Overview: wins, issues + exact fixes</li>
@@ -43,10 +44,10 @@ export default function PricingSection({ onScrollToTop }) {
               <li><span className="tick">✓</span> Technical Audit (14-point)</li>
               <li><span className="tick">✓</span> On-Page + Schema Analysis</li>
               <li><span className="tick">✓</span> Premium PDF Download</li>
-              <li className="locked"><span className="cross">✗</span> Keyword Opportunities</li>
-              <li className="locked"><span className="cross">✗</span> AI Overview Strategy</li>
-              <li className="locked"><span className="cross">✗</span> E-E-A-T Deep Analysis</li>
-              <li className="locked"><span className="cross">✗</span> Blog Content Strategy</li>
+              <li><span className="tick">✓</span> Keyword Opportunities</li>
+              <li><span className="tick">✓</span> AI Overview Strategy</li>
+              <li><span className="tick">✓</span> E-E-A-T Deep Analysis</li>
+              <li><span className="tick">✓</span> Blog Content Strategy</li>
             </ul>
             <button className="pricing-btn" onClick={onScrollToTop}>Audit Free →</button>
           </div>
@@ -58,7 +59,7 @@ export default function PricingSection({ onScrollToTop }) {
             <div className="pricing-price">$19</div>
             <div className="pricing-per">/ month</div>
             <ul className="pricing-features">
-              <li><span className="tick">✓</span> Unlimited audits — no daily limit</li>
+              <li><span className="tick">✓</span> Everything in Free</li>
               <li><span className="tick">✓</span> All 8 sections fully unlocked</li>
               <li><span className="tick">✓</span> All issues with exact fix instructions</li>
               <li><span className="tick">✓</span> Premium 10-page PDF export</li>
@@ -93,8 +94,11 @@ export default function PricingSection({ onScrollToTop }) {
             <ul className="pricing-features">
               <li><span className="tick">✓</span> Everything in Pro</li>
               <li><span className="tick">✓</span> White-label: your brand, your domain</li>
-              <li><span className="tick">✓</span> Rank in ChatGPT, Perplexity, Claude</li>
-              <li><span className="tick">✓</span> Google AI Overview — done for you</li>
+              <li><span className="tick">✓</span> Rank your business on ChatGPT & other AI platforms</li>
+              <li><span className="tick">✓</span> Get discovered by AI-powered search</li>
+              <li><span className="tick">✓</span> Increase your online visibility</li>
+              <li><span className="tick">✓</span> Stay ahead of 99.99% of businesses</li>
+              <li><span className="tick">✓</span> Everything done for you to get results</li>
               <li><span className="tick">✓</span> E-E-A-T authority building</li>
               <li><span className="tick">✓</span> Schema markup implementation</li>
               <li><span className="tick">✓</span> AI-optimized blog content</li>
