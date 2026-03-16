@@ -35,7 +35,7 @@ export default function PricingSection({ onScrollToTop }) {
             <div className="pricing-per">forever</div>
             <ul className="pricing-features">
               <li><span className="tick">✓</span> Unlimited audits — no daily limit</li>
-              <li><span className="tick">✓</span> 3 report generations per device</li>
+              <li><span className="tick">✓</span> 3 report generations per user</li>
               <li><span className="tick">✓</span> Overall SEO score (out of 10)</li>
               <li><span className="tick">✓</span> 7-category score breakdown</li>
               <li><span className="tick">✓</span> Full Overview: wins, issues + exact fixes</li>

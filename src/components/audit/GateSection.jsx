@@ -4,7 +4,7 @@ export default function GateSection({ onUnlock, reportData, auditUrl, onShowPriv
   const [name, setName]   = useState('');
   const [email, setEmail] = useState('');
   const [errMsg, setErrMsg] = useState('');
-  const [btnText, setBtnText] = useState('Send Verification Code →');
+  const [btnText, setBtnText] = useState('Generate Report →');
   const [btnDisabled, setBtnDisabled] = useState(false);
 
   async function sendOtp() {

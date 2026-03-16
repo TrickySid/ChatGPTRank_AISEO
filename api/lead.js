@@ -1,5 +1,7 @@
 import postgres from "postgres";
 
+const LIMIT = 3;
+
 function json(res, code, obj) {
   res.statusCode = code;
   res.setHeader("Content-Type", "application/json");
@@ -52,16 +54,34 @@ export default async function handler(req, res) {
       return json(res, 400, { ok: false, error: "Invalid auditUrl" });
     }
 
-    await sql`
-        insert into public.leads (name, email, audit_url)
-        values (${cleanName}, ${cleanEmail}, ${cleanAuditUrl || null})
-        on conflict on constraint leads_email_key do update set
-            name = excluded.name,
-            audit_url = excluded.audit_url,
-            created_at = now()
-        `;
+    // Increment per email (max 3). First insert starts at 1.
+    const rows = await sql`
+      insert into public.leads (name, email, audit_url, audit_count, last_audit_at)
+      values (${cleanName}, ${cleanEmail}, ${cleanAuditUrl || null}, 1, now())
+      on conflict on constraint leads_email_key do update set
+        name = excluded.name,
+        audit_url = excluded.audit_url,
+        last_audit_at = now(),
+        audit_count = public.leads.audit_count + 1
+      returning audit_count
+    `;
 
-    return json(res, 200, { ok: true });
+    const auditCount = rows?.[0]?.audit_count ?? 0;
+
+    if (auditCount > LIMIT) {
+      // revert the increment so it doesn't keep climbing past the limit
+      await sql`
+        update public.leads
+        set audit_count = audit_count - 1
+        where email = ${cleanEmail}
+      `;
+      return json(res, 403, {
+        ok: false,
+        error: `Limit reached. You can generate up to ${LIMIT} reports per email.`,
+      });
+    }
+
+    return json(res, 200, { ok: true, auditCount });
   } catch (err) {
     console.error("Lead insert failed:", err);
     return json(res, 500, { ok: false, error: "Server error" });
