@@ -27,13 +27,13 @@ export default function GateSection({ onUnlock, reportData, auditUrl, onShowPriv
       if (!res.ok) {
         shakeErr(data?.error || `Could not save details (${res.status})`);
         setBtnDisabled(false);
-        setBtnText('Send Verification Code →');
+        setBtnText('Generate Report →');
         return;
       }
     } catch (e) {
       shakeErr('Could not save your details. Please try again.');
       setBtnDisabled(false);
-      setBtnText('Send Verification Code →');
+      setBtnText('Generate Report →');
       return;
     }
 
@@ -44,7 +44,7 @@ export default function GateSection({ onUnlock, reportData, auditUrl, onShowPriv
     await new Promise(r => setTimeout(r, 800));
 
     setBtnDisabled(false);
-    setBtnText('Send Verification Code →');
+    setBtnText('Generate Report →');
 
     onUnlock(reportData, name.trim());
   }

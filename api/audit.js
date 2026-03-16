@@ -133,7 +133,7 @@ export default async function handler(req, res) {
 
     let parsed;
     try { parsed = JSON.parse(rawText.slice(s, e + 1)); }
-    catch { return res.status(502).json({ error: 'Failed to parse AI JSON' }); }
+    catch { return res.status(502).json({ error: 'Bad Gateway, Please try again' }); }
 
     return res.status(200).json({ report: parsed });
   } catch (err) {
