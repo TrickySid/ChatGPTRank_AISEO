@@ -1,59 +1,164 @@
-# ChatGPT Rank - AI SEO Audit Tool
+# ChatGPT Rank (AI SEO Audit)
 
-A full-featured AI SEO audit tool that analyzes any website and provides actionable recommendations for ranking on ChatGPT, Claude, Google AI Overview, and traditional search engines.
+Live: https://chatgpt-rank.com
 
-## Setup
+ChatGPT Rank is an AI-powered SEO + AI-search readiness audit tool. Users enter a website URL and instantly receive a structured, actionable report designed to improve visibility in modern AI-driven search surfaces like ChatGPT, Claude, and Google AI Overviews.
 
-1. **Install dependencies**
-   ```bash
-   npm install
-   ```
+---
 
-2. **Add your Anthropic API key**
-   ```bash
-   cp .env.example .env
-   ```
-   Then edit `.env` and add your key from https://console.anthropic.com/
+## What it does
 
-3. **Run the dev server**
-   ```bash
-   npm run dev
-   ```
+### 1) Instant AI SEO audit (URL → report)
+- Generates an 8-section audit with a clear overall score (out of 10)
+- Breaks down scores across:
+  - Technical SEO
+  - Content quality
+  - On-page SEO + schema
+  - Performance
+  - E-E-A-T (Experience, Expertise, Authority, Trust)
+  - AI readiness (AI Overviews / LLM citation readiness)
+  - Site architecture + content strategy
 
-4. **Build for production**
-   ```bash
-   npm run build
-   ```
+### 2) Action plan output (not generic tips)
+The report includes:
+- Specific wins (what’s already good)
+- Prioritized issues (HIGH / MED / LOW)
+- Exact fixes for each issue
+- Schema recommendations and on-page improvements
+- Blog topics and outlines crafted to help appear in AI answers
 
-## How it works
+### 3) Lead gate + usage limits
+After generating the audit, users unlock the full report by entering:
+- Name
+- Email
 
-- Enter any website URL in the hero section
-- The app calls the Claude API (claude-sonnet-4) to analyze the site
-- Returns a full 8-section SEO audit specific to that URL:
-  - Overview (wins, issues, quick wins)
-  - Technical Audit (14-point checklist)
-  - On-Page & Schema
-  - Keyword Opportunities
-  - AI Overview Strategy
-  - E-E-A-T Analysis
-  - Site Architecture
-  - Blog Content Strategy
+Leads are stored in a database (one row per email). Report unlocks are limited to 3 per email to reduce abuse while keeping the experience frictionless.
 
-## Tech Stack
+---
 
-- React 18 + Vite
-- Anthropic Claude API (claude-sonnet-4)
-- Vanilla CSS (no Tailwind)
+## Tech stack
 
-## Deploying to Netlify
+### Frontend
+- React (Vite)
+- Responsive, modern landing + report UI
+- Client calls serverless endpoints only (no secrets in the browser)
 
-1. Push to GitHub
-2. Connect repo in Netlify
-3. Set `ANTHROPIC_API_KEY` in Netlify environment variables
-4. Build command: `npm run build`
-5. Publish directory: `dist`
+### Backend
+- Vercel Serverless Functions
 
-## Security Notes
-- Do not put API keys in `VITE_*` variables. Vite exposes those to the browser bundle.
-- This project uses a serverless endpoint (`/api/audit`) to call Anthropic with `ANTHROPIC_API_KEY` stored server-side.
-- Optional: set `ALLOWED_ORIGINS` (comma-separated) and rate limit env vars.
+`POST /api/audit`
+- Validates and normalizes the input URL
+- Calls Anthropic (Claude) securely using a server-side API key
+- Returns a structured JSON report
+
+`POST /api/lead`
+- Saves name/email/audit URL to Supabase Postgres
+- Enforces max 3 report unlocks per email
+
+### Database
+- Supabase Postgres
+- `public.leads` stores:
+  - `name`
+  - `email` (unique)
+  - `audit_url`
+  - `audit_count`
+  - `last_audit_at`
+  - `created_at`
+
+---
+
+## Security and reliability notes
+- No API keys are exposed to the client.
+- All AI provider calls happen server-side via Vercel functions.
+- Basic validation for URL/email and abuse-resistant rules (blocks localhost targets).
+- CORS allowlist controlled by `ALLOWED_ORIGINS`.
+- Database writes use UPSERT against a unique email constraint.
+
+---
+
+## API endpoints
+
+### `POST /api/audit`
+Request:
+```json
+{ "url": "https://example.com" }
+```
+
+Response:
+```json
+{ "report": { "...": "structured audit json" } }
+```
+
+### `POST /api/lead`
+Request:
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "auditUrl": "https://example.com"
+}
+```
+
+Response:
+```json
+{ "ok": true, "auditCount": 1 }
+```
+
+If limit exceeded:
+```json
+{ "ok": false, "error": "Limit reached. You can generate up to 3 reports per email." }
+```
+
+---
+
+## Environment variables
+
+Set these in Vercel (Project Settings → Environment Variables).
+
+### Required
+- `ANTHROPIC_API_KEY`
+- `ALLOWED_ORIGINS` (comma-separated)
+
+Example:
+```bash
+ALLOWED_ORIGINS=https://chatgpt-rank.com,https://www.chatgpt-rank.com
+```
+
+### Supabase (via Vercel integration)
+- `SUPABASE_POSTGRES_URL` (used server-side in `/api/lead`)
+
+---
+
+## Local development
+
+1) Install dependencies
+```bash
+npm install
+```
+
+2) Run locally
+```bash
+npm run dev
+```
+
+Note: Serverless functions run in production on Vercel. For local function testing, you can use the Vercel CLI:
+```bash
+npm i -g vercel
+vercel dev
+```
+
+---
+
+## Roadmap
+- User authentication (Supabase Auth)
+- Pricing plans (Free / Pro) with usage tracking
+- Audit history per user account
+- Stripe billing and webhooks
+- Admin dashboard for leads and report analytics
+
+---
+
+## Built by
+Siddhesh Bakre
+
+Live project: https://chatgpt-rank.com
